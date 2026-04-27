@@ -1,0 +1,15 @@
+# Virtual environment
+.venv/
+
+# Python cache and artifacts
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+
+# Local env files
+.env
+.env.*

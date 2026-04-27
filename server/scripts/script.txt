@@ -1,0 +1,2 @@
+.\.venv\Scripts\python.exe -m pytest -q
+.\.venv\Scripts\python.exe -m pytest #use this for details

@@ -22,7 +22,7 @@ class AppTheme {
           primary: _darkPrimary,
           secondary: _darkSecondary,
           surface: _darkSurface,
-          surfaceVariant: _darkSurfaceVariant,
+          surfaceContainerHighest: _darkSurfaceVariant,
           onPrimary: Colors.black,
           onSurface: Colors.white,
         );
@@ -40,7 +40,7 @@ class AppTheme {
       ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: _darkSurface,
-        indicatorColor: _darkPrimary.withOpacity(0.16),
+        indicatorColor: _darkPrimary.withAlpha((0.16 * 255).round()),
         iconTheme: WidgetStateProperty.resolveWith((states) {
           final selected = states.contains(WidgetState.selected);
           return IconThemeData(color: selected ? _darkPrimary : Colors.white70);
@@ -59,7 +59,7 @@ class AppTheme {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       ),
       sliderTheme: const SliderThemeData(
-        showValueIndicator: ShowValueIndicator.always,
+        showValueIndicator: ShowValueIndicator.onDrag,
       ),
     );
   }
@@ -74,7 +74,7 @@ class AppTheme {
           primary: _lightPrimary,
           secondary: _lightSecondary,
           surface: _lightSurface,
-          surfaceVariant: _lightSurfaceVariant,
+          surfaceContainerHighest: _lightSurfaceVariant,
         );
 
     return ThemeData(
@@ -90,7 +90,7 @@ class AppTheme {
       ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: _lightSurface,
-        indicatorColor: _lightPrimary.withOpacity(0.12),
+        indicatorColor: _lightPrimary.withAlpha((0.12 * 255).round()),
       ),
       cardTheme: CardThemeData(
         color: _lightSurface,

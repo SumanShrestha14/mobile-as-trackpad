@@ -8,12 +8,14 @@ class SettingsState {
     required this.sensitivity,
     required this.scrollSpeed,
     required this.themeMode,
+    this.isLoading = false,
   });
 
   final ViewStatus status;
   final double sensitivity;
   final double scrollSpeed;
   final ThemeMode themeMode;
+  final bool isLoading;
 
   factory SettingsState.initial() {
     return const SettingsState(
@@ -29,12 +31,14 @@ class SettingsState {
     double? sensitivity,
     double? scrollSpeed,
     ThemeMode? themeMode,
+    bool? isLoading,
   }) {
     return SettingsState(
       status: status ?? this.status,
       sensitivity: sensitivity ?? this.sensitivity,
       scrollSpeed: scrollSpeed ?? this.scrollSpeed,
       themeMode: themeMode ?? this.themeMode,
+      isLoading: isLoading ?? this.isLoading,
     );
   }
 }

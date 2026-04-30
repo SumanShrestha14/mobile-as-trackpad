@@ -25,7 +25,7 @@ class TrackpadControlBar extends StatelessWidget {
         color: theme.colorScheme.surface,
         border: Border(
           top: BorderSide(
-            color: theme.dividerColor.withOpacity(0.12),
+            color: theme.dividerColor.withAlpha((0.12 * 255).round()),
           ),
         ),
       ),

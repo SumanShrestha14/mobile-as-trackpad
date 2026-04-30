@@ -10,6 +10,9 @@ import '../../../shared/widgets/error_state_view.dart';
 import '../../../shared/widgets/section_header.dart';
 import '../bloc/connection_cubit.dart';
 import '../widgets/connection_status_card.dart';
+import '../../../../injection/injection.dart';
+import '../../../../domain/usecases/connect_device.dart';
+import '../../../../domain/usecases/disconnect_device.dart';
 
 class ConnectionPage extends StatelessWidget {
   const ConnectionPage({super.key});
@@ -17,7 +20,10 @@ class ConnectionPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => ConnectionCubit(),
+      create: (_) => ConnectionCubit(
+        connectDevice: sl<ConnectDevice>(),
+        disconnectDevice: sl<DisconnectDevice>(),
+      ),
       child: BlocBuilder<ConnectionCubit, dynamic>(
         builder: (context, _) {
           final state = context.read<ConnectionCubit>().state;

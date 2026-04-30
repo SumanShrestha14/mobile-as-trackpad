@@ -19,9 +19,9 @@ class TrackpadSurface extends StatelessWidget {
   final ViewStatus status;
   final String feedback;
   final bool keyboardVisible;
-  final ValueChanged<String> onPointerDown;
-  final ValueChanged<String> onPointerMove;
-  final ValueChanged<String> onPointerUp;
+  final ValueChanged<PointerEvent> onPointerDown;
+  final ValueChanged<PointerEvent> onPointerMove;
+  final ValueChanged<PointerEvent> onPointerUp;
 
   @override
   Widget build(BuildContext context) {
@@ -31,11 +31,11 @@ class TrackpadSurface extends StatelessWidget {
       padding: EdgeInsets.zero,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(20),
-        child: Listener(
+          child: Listener(
           behavior: HitTestBehavior.opaque,
-          onPointerDown: (_) => onPointerDown('Pointer down received'),
-          onPointerMove: (_) => onPointerMove('Pointer move received'),
-          onPointerUp: (_) => onPointerUp('Pointer up received'),
+          onPointerDown: (ev) => onPointerDown(ev),
+          onPointerMove: (ev) => onPointerMove(ev),
+          onPointerUp: (ev) => onPointerUp(ev),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 180),
             width: double.infinity,
@@ -45,7 +45,7 @@ class TrackpadSurface extends StatelessWidget {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  (theme.colorScheme.surfaceVariant).withOpacity(0.7),
+                  theme.colorScheme.surfaceContainerHighest.withAlpha((0.7 * 255).round()),
                   theme.colorScheme.surface,
                 ],
               ),
@@ -100,7 +100,7 @@ class TrackpadSurface extends StatelessWidget {
                         vertical: kSpacingUnit,
                       ),
                       decoration: BoxDecoration(
-                        color: theme.colorScheme.primary.withOpacity(0.12),
+                        color: theme.colorScheme.primary.withAlpha((0.12 * 255).round()),
                         borderRadius: BorderRadius.circular(999),
                       ),
                       child: Text(

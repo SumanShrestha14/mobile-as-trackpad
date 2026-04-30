@@ -56,7 +56,7 @@ class SettingsPage extends StatelessWidget {
                     ? Icons.dark_mode_rounded
                     : Icons.light_mode_rounded,
                 value: isDarkTheme,
-                onChanged: cubit.toggleThemeMode,
+                onChanged: (isDark) => cubit.toggleThemeMode(isDark),
               ),
               const SizedBox(height: kSpacingUnit * 2),
               Text(

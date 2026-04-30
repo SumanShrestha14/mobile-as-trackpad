@@ -17,9 +17,7 @@ class MobileAsTrackpadApp extends StatelessWidget {
       providers: [
         BlocProvider(create: (_) => NavigationCubit()),
         BlocProvider(
-          create: (_) => SettingsCubit(
-            themeRepository: ThemeRepository(),
-          ),
+          create: (_) => SettingsCubit(themeRepository: ThemeRepository()),
         ),
       ],
       child: BlocBuilder<SettingsCubit, SettingsState>(

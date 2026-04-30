@@ -6,20 +6,22 @@ import 'settings_state.dart';
 
 class SettingsCubit extends Cubit<SettingsState> {
   SettingsCubit({ThemeRepository? themeRepository})
-      : _themeRepository = themeRepository ?? ThemeRepository(),
-        super(SettingsState.initial()) {
+    : _themeRepository = themeRepository ?? ThemeRepository(),
+      super(SettingsState.initial()) {
     _initializeTheme();
   }
 
   final ThemeRepository _themeRepository;
 
-  /// Load saved theme mode on initialization.
   Future<void> _initializeTheme() async {
+    if (isClosed) return;
     try {
       emit(state.copyWith(isLoading: true));
       final savedTheme = await _themeRepository.getThemeMode();
+      if (isClosed) return;
       emit(state.copyWith(themeMode: savedTheme, isLoading: false));
     } catch (_) {
+      if (isClosed) return;
       emit(state.copyWith(isLoading: false));
     }
   }
@@ -35,11 +37,11 @@ class SettingsCubit extends Cubit<SettingsState> {
   Future<void> toggleThemeMode(bool isDark) async {
     final newTheme = isDark ? ThemeMode.dark : ThemeMode.light;
     emit(state.copyWith(themeMode: newTheme));
-    
+
     try {
       await _themeRepository.saveThemeMode(newTheme);
     } catch (_) {
-      // Silently fail; theme is already updated in UI state.
+      // Keep UI theme updated, but persistence failure is non-fatal.
     }
   }
 }

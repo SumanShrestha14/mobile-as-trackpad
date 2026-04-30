@@ -7,7 +7,8 @@ import '../../../shared/models/view_status.dart';
 import 'connection_state.dart';
 
 class ConnectionCubit extends Cubit<ConnectionState> {
-  ConnectionCubit({required this.connectDevice, required this.disconnectDevice}) : super(ConnectionState.initial());
+  ConnectionCubit({required this.connectDevice, required this.disconnectDevice})
+    : super(ConnectionState.initial());
 
   final ConnectDevice connectDevice;
   final DisconnectDevice disconnectDevice;
@@ -22,34 +23,71 @@ class ConnectionCubit extends Cubit<ConnectionState> {
       emit(
         state.copyWith(
           status: ViewStatus.error,
+          isConnected: false,
           message: 'Enter an IP address or add auto-detect later.',
         ),
       );
       return;
     }
 
-    emit(state.copyWith(status: ViewStatus.loading, message: 'Connecting to $ipAddress...'));
+    emit(
+      state.copyWith(
+        status: ViewStatus.loading,
+        message: 'Connecting to $ipAddress...',
+      ),
+    );
 
     try {
-      final device = Device(id: ipAddress, name: 'Desktop device', address: ipAddress);
+      final device = Device(
+        id: ipAddress,
+        name: 'Desktop device',
+        address: ipAddress,
+      );
       await connectDevice.call(device);
-      emit(state.copyWith(status: ViewStatus.idle, isConnected: true, deviceName: device.name, message: 'Connected to $ipAddress'));
+      emit(
+        state.copyWith(
+          status: ViewStatus.idle,
+          isConnected: true,
+          deviceName: device.name,
+          message: 'Connected to $ipAddress',
+        ),
+      );
     } catch (e) {
-      emit(state.copyWith(status: ViewStatus.error, message: 'Failed to connect: ${e.toString()}'));
+      emit(
+        state.copyWith(
+          status: ViewStatus.error,
+          isConnected: false,
+          message: 'Failed to connect: ${e.toString()}',
+        ),
+      );
     }
   }
 
   Future<void> disconnect() async {
-    emit(state.copyWith(status: ViewStatus.loading, message: 'Disconnecting...'));
+    emit(
+      state.copyWith(status: ViewStatus.loading, message: 'Disconnecting...'),
+    );
     try {
       await disconnectDevice.call();
       emit(ConnectionState.initial());
     } catch (e) {
-      emit(state.copyWith(status: ViewStatus.error, message: 'Failed to disconnect: ${e.toString()}'));
+      emit(
+        state.copyWith(
+          status: ViewStatus.error,
+          isConnected: false,
+          message: 'Failed to disconnect: ${e.toString()}',
+        ),
+      );
     }
   }
 
   void resetError() {
-    emit(state.copyWith(status: ViewStatus.idle, message: 'Waiting for a device connection'));
+    emit(
+      state.copyWith(
+        status: ViewStatus.idle,
+        isConnected: false,
+        message: 'Waiting for a device connection',
+      ),
+    );
   }
 }

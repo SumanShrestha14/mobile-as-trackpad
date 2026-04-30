@@ -81,7 +81,7 @@ class ConnectionPage extends StatelessWidget {
                 ),
                 const SizedBox(height: kSpacingUnit * 1.5),
                 Text(
-                  'Loading, empty, and error states are placeholders for the future connection stack.',
+                  'Connection status and persistence are active; loading/error states remain for network edge cases.',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),

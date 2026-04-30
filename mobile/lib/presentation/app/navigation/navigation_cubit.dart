@@ -11,7 +11,8 @@ extension AppTabX on AppTab {
 }
 
 class NavigationState {
-  const NavigationState({required this.index});
+  const NavigationState({required this.index})
+    : assert(index >= 0 && index < AppTab.values.length);
 
   final int index;
 
@@ -23,9 +24,12 @@ class NavigationState {
 }
 
 class NavigationCubit extends Cubit<NavigationState> {
-  NavigationCubit() : super(const NavigationState(index: 0));
+  NavigationCubit() : super(NavigationState(index: 0));
 
   void selectTab(int index) {
+    if (index < 0 || index >= AppTab.values.length) {
+      return;
+    }
     if (index == state.index) {
       return;
     }

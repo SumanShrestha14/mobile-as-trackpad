@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/widgets.dart';
 import 'package:mobile/domain/entities/gesture.dart';
 import 'package:mobile/data/models/device_model.dart';
 
@@ -13,37 +14,33 @@ class SocketRemoteDataSource {
   Future<void> connect(DeviceModel device) async {
     await disconnect();
     try {
-      print('[SocketRemoteDataSource] Connecting to ${device.address}:8765');
       _socket = await Socket.connect(
         device.address,
         8765,
         timeout: const Duration(seconds: 5),
       );
-      print('[SocketRemoteDataSource] ✓ Connected');
 
       _sub = _socket!.listen(
         (data) {
           final msg = utf8.decode(data);
-          print('[SocketRemoteDataSource] Received: $msg');
+          debugPrint('[SocketRemoteDataSource] Received: $msg');
         },
         onDone: () {
-          print('[SocketRemoteDataSource] Server closed connection');
           _stopHeartbeat();
+          _socket = null;
         },
         onError: (e) {
-          print('[SocketRemoteDataSource] ✗ Socket error: $e');
           _stopHeartbeat();
+          _socket = null;
+          debugPrint('[SocketRemoteDataSource] Socket error: $e');
         },
       );
 
-      // Send HELLO handshake
       await _sendMessage('HELLO', {});
-      print('[SocketRemoteDataSource] Handshake sent');
-
-      // Start heartbeat to keep connection alive
       _startHeartbeat();
     } catch (e) {
-      print('[SocketRemoteDataSource] ✗ Connection failed: $e');
+      _stopHeartbeat();
+      _socket = null;
       rethrow;
     }
   }
@@ -65,7 +62,9 @@ class SocketRemoteDataSource {
         try {
           await _sendMessage('HEARTBEAT', {});
         } catch (e) {
-          print('[SocketRemoteDataSource] Heartbeat failed: $e');
+          _stopHeartbeat();
+          _socket = null;
+          debugPrint('[SocketRemoteDataSource] Heartbeat failed: $e');
         }
       }
     });
@@ -79,34 +78,28 @@ class SocketRemoteDataSource {
   Future<void> sendGesture(Gesture gesture) async {
     if (_socket == null) throw SocketException('Not connected');
 
-    try {
-      if (gesture.type.name == 'move') {
-        await _sendMessage('MOVE', {
-          'dx': gesture.deltaX,
-          'dy': gesture.deltaY,
-        });
-      } else if (gesture.type.name == 'tap') {
-        final button = gesture.clickButton?.name ?? 'left';
-        await _sendMessage('TAP', {
-          'button': button,
-          'clicks': gesture.clicks ?? 1,
-        });
-      } else if (gesture.type.name == 'scroll') {
-        await _sendMessage('SCROLL', {'amount': gesture.deltaY.toInt()});
-      }
-    } catch (e) {
-      print('[SocketRemoteDataSource] Error: $e');
-      rethrow;
+    if (gesture.type.name == 'move') {
+      await _sendMessage('MOVE', {'dx': gesture.deltaX, 'dy': gesture.deltaY});
+    } else if (gesture.type.name == 'tap') {
+      final button = gesture.clickButton?.name ?? 'left';
+      await _sendMessage('TAP', {
+        'button': button,
+        'clicks': gesture.clicks ?? 1,
+      });
+    } else if (gesture.type.name == 'scroll') {
+      await _sendMessage('SCROLL', {'amount': gesture.deltaY.toInt()});
     }
   }
 
   Future<void> _sendMessage(String type, Map<String, dynamic> payload) async {
-    if (_socket == null) throw SocketException('Not connected');
+    final socket = _socket;
+    if (socket == null) throw SocketException('Not connected');
+
     _messageSeq++;
     final msg = {'type': type, 'seq': _messageSeq, 'payload': payload};
-    final line = json.encode(msg) + '\n';
-    _socket!.write(line);
-    await _socket!.flush();
+    final line = '${json.encode(msg)}\n';
+    socket.write(line);
+    await socket.flush();
   }
 
   bool get isConnected => _socket != null;
